@@ -1,2 +1,2 @@
 # Numerical_Methods
-Numerical Methods Code which I learnt
+I created this repository for implementing codes of Numerical Methods which I am learning.
