@@ -41,9 +41,9 @@ In matrix notation, the process is written as:
 
 #include<stdio.h>
 #include<stdlib.h>
-#include<math.h>       //for fabs() function
+#include<math.h>       /*for fabs() function*/
 
-#define SIZE 3        //as we are taking 3x3 matrices
+#define SIZE 4       /*depends on the size, can be changed as per requirements*/
 
 /*
 Augmented Matrix Input takes the input for the augmented matrix of the 
@@ -52,12 +52,12 @@ system to be solved.
     @Output : None
 */
 
-void Augmented_Matrix_Input(float mat[SIZE][SIZE+1]) {
+void Augmented_Matrix_Input(double mat[SIZE][SIZE+1]) {
 	int i, j;
 	printf("ENTER THE MATRIX ELEMENTS:\n");
 	for(i = 0; i < SIZE; i++) {
-		for(j = 0; j < SIZE + 1; j++) {    //augmented matrix, size+1
-			scanf("%f", &mat[i][j]);
+		for(j = 0; j < SIZE + 1; j++) {    /*augmented matrix, size+1*/
+			scanf("%lf", &mat[i][j]);
 		}		
 	}	
 }
@@ -69,110 +69,122 @@ MatMult is a function that multiplies the two matrices.
     @Output : None
 */
 
-void MatMult(float A[SIZE][SIZE], float B[SIZE][1], float C[SIZE][1]) {
+void MatMult(double A[][SIZE], double B[][1], double C[][1]) {
 	int i, j, k;
 	for(i = 0; i < SIZE; i++) {
-		for(j = 0; j < 1; j++) {
-		    C[i][j] = 0;
+		    C[i][0] = 0.0;
 			for(k = 0; k < SIZE; k++) {
-				C[i][j] += A[i][k] * B[k][j];
-			}		
-		}		
-	}	
+				C[i][0] += A[i][k] * B[k][0];
+	        }
+	}
 }
 
 /*
 MatAdd is a function to add two matrices.
-    @Input : A, B, C three float matrices of apt dimensions. The addition is 
+    @Input : A, B, C three double matrices of apt dimensions. The addition is
     handled in the function only and stored in C.
     @Output : None
 */
 
-void MatAdd(float A[SIZE][1], float B[SIZE][1], float C[SIZE][1]) {
+void MatAdd(double A[][1], double B[][1], double C[][1]) {
 	int i, j;
 	for(i = 0; i < SIZE; i++) {
-		for(j = 0;j < 1;j++) {
-		C[i][j] = A[i][j] + B[i][j];
-	    }	    	    
-	}	
+		C[i][0] = A[i][0] + B[i][0];
+	}
+}
+
+/*check_Mat function checks if further iterations need to be performed
+    @Input = double X[][0] double Xprev[][0],
+	         epsilon, checks if 2 values of the prev iterration
+			 and curr iteration are less than epsilon or not.
+    @Output = int 0 or 1, truth value of the check
+*/
+
+int check_Mat(double X[][1], double Xtemp[][1], double epsilon) {
+	int i, count = 0;
+    /*Check if relative error greater than tolerance or not */
+	for(i = 0; i < SIZE; ++i) {
+		if(fabs( (Xtemp[i][0] - X[i][0]) / Xtemp[i][0] ) > epsilon) {
+			count++;
+		}
+	}
+	if(count)
+		return 1;
+	else
+		return 0;
 }
 
 /*
 Jacobi function calculates the solutions for the system.
-    @Input : float pointer mat, the augmented matrix for the system.
+    @Input : double pointer mat, the augmented matrix for the system.
 	The calculation is done inside the function and the result is shown.
     @Output : None
 */
 
-void Jacobi(float mat[SIZE][SIZE+1]) {
-	float B[SIZE][SIZE];           
-	float C[SIZE][1];
-	float X[SIZE][1];
+void Jacobi(double mat[SIZE][SIZE+1]) {
+	double B[SIZE][SIZE];   /*Modified Coefficient matrix */
+	double C[SIZE][1];      /*Constants matrix*/
+	double X[SIZE][1];      /*Matrix for storing the iterative values*/
+	double Xtemp[SIZE][1];  /*Temporary storage of Iterative values*/
+	double Xprev[SIZE][1];  /*Stores previous Values for error checking*/
+	register int i, j, t;
+
+	/*epsilon is the required precesion, can change its value*/
 	
-	int i, j;
+	double epsilon = 0.000001;
 	
-	//epsilon is the required precesion, can change its value
-	
-	float epsilon = 0.0001;
-	float prev_val;
-	
-	//Initial approx is [0, 0, 0....]
+	/*Initial approx is [0, 0, 0....]*/
 	
 	for(i = 0; i < SIZE ; i++) {
-		X[i][0] = 0;                      
+		Xprev[i][0] = Xtemp[i][0] = X[i][0] = 0.0;
 	}
 	
-	//Check if diagonal elements are non zero.
+	/*Check if diagonal elements are non zero. If zero, show error and break*/
 	
-	for(i = 0; i<SIZE; i++) {
-		if(fabs(mat[i][i] - 0.0) < epsilon){
+	for(i = 0; i < SIZE; i++) {
+		if(fabs(mat[i][i] ) < epsilon){
 			printf("CANNOT SOLVE!!!\n");
-			return EXIT_FAILURE;
+			exit(EXIT_FAILURE);
 		}
 	}
 	
-	//Sets the matrix B as per structure shown above
+	/*Sets the matrix B as per structure shown above*/
 	
 	for(i = 0; i < SIZE; i++) {
-		for(j = 0; j < SIZE ; j++) {   
+		for(j = 0; j < SIZE ; j++) {
+			/*If diagonal, set to 0. Else, divide by diagonal element*/
 			if(i!=j) {
 				B[i][j] = - mat[i][j] / mat[i][i];				
 			} else {
-				B[i][j] = 0;
-			}
-		}		
-	}
-	
+				B[i][j] = 0.0;
+            }
+		}
+  	}
+	/*Set value of C as per structure shown above*/
 	for(i = 0;i < SIZE; i++){
-		C[i][0] = mat[i][SIZE] / mat[i][i];		
+		C[i][0] = mat[i][SIZE] / mat[i][i];
+	}
+
+	MatMult(B, X, Xtemp);
+	MatAdd(C, Xtemp, X);
+
+	while(check_Mat(X, Xprev, epsilon)) {
+		for(t = 0;t < SIZE; ++t) {
+	    	Xprev[t][0] = X[t][0];
+		}
+		MatMult(B, X, Xtemp);
+	    MatAdd(C, Xtemp, X);
 	}
 	
-	//Sets initial Value of prev_val
-	
-	MatMult(B, X, X);
-	MatAdd(C, X, X);
-	prev_val = 0.0;
-	
-	//Iterates repeatedly till convergence
-	
-	while(fabs(X[0][0] - prev_val) > epsilon) {
-		prev_val = X[0][0];
-		MatMult(B, X, X);
-	    MatAdd(C, X, X);	
-	}
-		
-	//prints final result
-	
-	for(j=0;j<SIZE;j++) {
-		printf("X[%d] = %f\n", j, X[j][0]);
+	for(j = 0;j < SIZE;j++) {
+		printf("X[%d] = %lf\n", j, X[j][0]);
 	}	
 }
 
 int main(){
-	float mat[SIZE][SIZE+1];
+	double mat[SIZE][SIZE+1];
 	Augmented_Matrix_Input(mat);
 	Jacobi(mat);
 	return EXIT_SUCCESS;	
 }
-
 
