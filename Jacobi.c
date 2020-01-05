@@ -72,9 +72,9 @@ MatMult is a function that multiplies the two matrices.
 void MatMult(double A[][SIZE], double B[][1], double C[][1]) {
 	int i, j, k;
 	for(i = 0; i < SIZE; i++) {
-		    C[i][0] = 0.0;
-			for(k = 0; k < SIZE; k++) {
-				C[i][0] += A[i][k] * B[k][0];
+	    C[i][0] = 0.0;
+	        for(k = 0; k < SIZE; k++) {
+		    C[i][0] += A[i][k] * B[k][0];
 	        }
 	}
 }
@@ -95,8 +95,8 @@ void MatAdd(double A[][1], double B[][1], double C[][1]) {
 
 /*check_Mat function checks if further iterations need to be performed
     @Input = double X[][0] double Xprev[][0],
-	         epsilon, checks if 2 values of the prev iterration
-			 and curr iteration are less than epsilon or not.
+	     epsilon, checks if 2 values of the prev iterration
+	     and curr iteration are less than epsilon or not.
     @Output = int 0 or 1, truth value of the check
 */
 
@@ -104,14 +104,14 @@ int check_Mat(double X[][1], double Xtemp[][1], double epsilon) {
 	int i, count = 0;
     /*Check if relative error greater than tolerance or not */
 	for(i = 0; i < SIZE; ++i) {
-		if(fabs( (Xtemp[i][0] - X[i][0]) / Xtemp[i][0] ) > epsilon) {
-			count++;
-		}
+	    if(fabs( (Xtemp[i][0] - X[i][0]) / Xtemp[i][0] ) > epsilon) {
+		    count++;
+	    }
 	}
 	if(count)
-		return 1;
+	    return 1;
 	else
-		return 0;
+	    return 0;
 }
 
 /*
