@@ -1,4 +1,4 @@
-/*C program to implement trapezoidal rule*/
+/*C program to implement trapezoidal rule and simpson's rule*/
 /*Trapezoidal rule works by dividing the integral into trapezoids
 This method has sometimes slow convergence compared to Simpsons rule.*/
 
