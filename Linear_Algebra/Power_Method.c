@@ -127,7 +127,7 @@ void Power_Method() {
 	}
 	
 	MatMult(A, X, Xi);          /*Xi is temporary variable*/
-    Eigen_value_prev = 0;        /*Random value for Eigenvalue initially*/
+        Eigen_value_prev = 0;        /*Random value for Eigenvalue initially*/
 	Eigen_value = Max_Arr(Xi);
 	Divide_by_Eigen(Xi, Eigen_value);
 	
@@ -137,8 +137,8 @@ void Power_Method() {
 	}
 	
 	while(fabs((Eigen_value - Eigen_value_prev)) > epsilon) {
-			Eigen_value_prev = Eigen_value;
-			MatMult(A, X, Xi);
+		Eigen_value_prev = Eigen_value;
+		MatMult(A, X, Xi);
         	Eigen_value= Max_Arr(Xi);
         	Divide_by_Eigen(Xi, Eigen_value);
         	
