@@ -27,7 +27,7 @@ void Euler_Method() {
 
 /*Calculates the value for a particular point. */
 void Modified_Euler(double x0, double y0, double h) {
-	double y1 = y0 + h*f(x0, y0), x1 = x0, temp = 0.0;
+	double y1 = y0 + h*f(x0, y0), x1 = x0+h, temp = 0.0;
  	printf("\n\tEulers Modified Method for Solving Differential Equations \n");
 	while(fabs(temp - y1)>0.00000001) {
 		temp = y1;
